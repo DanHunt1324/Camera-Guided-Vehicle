@@ -434,9 +434,9 @@ async function DetectImage() {
   cv.threshold(mask1,mask,THRESH_MIN,255,cv.THRESH_BINARY);
   //threshold(source image,destination image,threshold,255,threshold method);
 
-  //ANN:9 //See if this breaks anything                                                                       GET RID OF INVERT
 
-/********************start contours******************************************/ // Can safely remove Contours
+
+/********************start contours******************************************/ // Using contours so don't remove
   //ANN:10
   if(b_tracker == true){ // I have removed the invert if statement as it is kind of pointless for my needs
 
@@ -479,8 +479,7 @@ async function DetectImage() {
     //let max_test_area_arg = MaxAreaArg(TestArray0);
     //console.log("MAXTESTAREAARG = "+max_test_area_arg);
 
-
-
+    /*NEED TO USE THIS CODE BELOW TO GET THE MAX AREA OF THE SHAPE AND THEN USE THAT TO MOVE THE ROBOT FORWARDS AND BACKWARDS*/
     let ArgMaxArea = MaxAreaArg(M00Array);
     if(ArgMaxArea >= 0){
     cnt = contours.get(MaxAreaArg(M00Array));  //use the contour with biggest MOO

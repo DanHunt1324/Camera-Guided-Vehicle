@@ -56,7 +56,13 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 //const int Motor2Pin3 = 13;
 //const int Motor2Pin4 = 14;
 
+void MotorDefault() { // STOPS THE MOTOR MOVING 
+  digitalWrite(MOTOR1PIN1, LOW);
+  digitalWrite(MOTOR1PIN2, LOW);
 
+  digitalWrite(MOTOR2PIN3,LOW);
+  digitalWrite(MOTOR2PIN4,LOW);
+}
 /* Creates funtion for both directions of travel */
 void clockwise() {
   digitalWrite(MOTOR1PIN1, HIGH);
@@ -112,9 +118,17 @@ void ExecuteCommand() {
     }
     else if (XcmVal <= 240 ){
       clockwise();
-      Serial.print("clockwise");
+      Serial.println("clockwise");
     }
   }
+  else if (cmd=="MAXAREAARG"){
+    int MaxAreaArgs = P1.toInt();
+    Serial.println("cmd= " + cmd + "MAXAREARGS="+MaxAreaArgs); // NOT SURE IF THIS WILL WORK BUT WANT TO PRINT THE VALUE OF THIS ARRAY, May need to use a different value, look to M00 and cnt.
+  }
+
+/* Once the size of the object can be determined in pixels it needs to be converted back into value of distance away from vehicle*/
+/* Alternatively the distance the vehicle sits can be made a constant which is a much greater idea. */
+  
   else if (cmd=="quality") {
     sensor_t * s = esp_camera_sensor_get();
     int val = P1.toInt();
@@ -150,7 +164,7 @@ void setup() {
   pinMode(MOTOR2PIN3,OUTPUT);
   pinMode(MOTOR2PIN4,OUTPUT);
   pinMode(LED_BUILTIN,OUTPUT);
-
+  MotorDefault(); // By default the vehicle should not move.
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
   config.ledc_timer = LEDC_TIMER_0;
