@@ -43,6 +43,37 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 #define HREF_GPIO_NUM     23
 #define PCLK_GPIO_NUM     22
 
+/* Defining the pins that control the DC motors */
+#define LED_BUILTIN       4
+#define MOTOR1PIN1        15
+#define MOTOR1PIN2        12
+#define MOTOR2PIN3        13
+#define MOTOR2PIN4        14
+
+
+//const int Motor1Pin1 = 15;
+//const int Motor1Pin2 = 12;
+//const int Motor2Pin3 = 13;
+//const int Motor2Pin4 = 14;
+
+
+/* Creates funtion for both directions of travel */
+void clockwise() {
+  digitalWrite(MOTOR1PIN1, HIGH);
+  digitalWrite(MOTOR1PIN2, LOW);
+
+  digitalWrite(MOTOR2PIN3,LOW);
+  digitalWrite(MOTOR2PIN4,HIGH);
+}
+
+void anticlockwise(){
+  digitalWrite(MOTOR1PIN1, LOW);
+  digitalWrite(MOTOR1PIN2, HIGH);
+
+  digitalWrite(MOTOR2PIN3,HIGH);
+  digitalWrite(MOTOR2PIN4,LOW);
+}
+
 WiFiServer server(80);
 //ANN:2
 void ExecuteCommand() {
@@ -72,9 +103,16 @@ void ExecuteCommand() {
     int XcmVal = P1.toInt();
     int YcmVal = P2.toInt();
     Serial.println("cmd= "+cmd+" ,VALXCM= "+XcmVal);
+
     /*THIS IS THE CODE I HAVE ADDED MYSELF*/
-    if (XcmVal >= 180){
-      Serial.println("GOOD RESULT");
+
+    if (XcmVal >= 180){   //If the object is in the right half of screen turn anticlockwise
+      anticlockwise();
+      Serial.println("anti-clockwise");
+    }
+    else if (XcmVal <= 240 ){
+      clockwise();
+      Serial.print("clockwise");
     }
   }
   else if (cmd=="quality") {
@@ -103,9 +141,15 @@ void ExecuteCommand() {
 void setup() {
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
 
-  Serial.begin(115200);
+  Serial.begin(115200); // starting the serial comms bus
   Serial.setDebugOutput(true);
   Serial.println();
+
+  pinMode(MOTOR1PIN1,OUTPUT); // Setting the motor pins up as outputs
+  pinMode(MOTOR1PIN2,OUTPUT);
+  pinMode(MOTOR2PIN3,OUTPUT);
+  pinMode(MOTOR2PIN4,OUTPUT);
+  pinMode(LED_BUILTIN,OUTPUT);
 
   camera_config_t config;
   config.ledc_channel = LEDC_CHANNEL_0;
@@ -166,6 +210,7 @@ void setup() {
   if (WiFi.status() == WL_CONNECTED) {
     Serial.print("ESP IP Address: http://");
     Serial.println(WiFi.localIP());
+    digitalWrite(LED_BUILTIN,HIGH);
   }
   server.begin();
 }

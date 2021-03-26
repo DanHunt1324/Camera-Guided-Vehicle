@@ -20,7 +20,7 @@ html {
     font-family: Arial, Helvetica, sans-serif;
     }
 body {
-    background-color:  #ccffff;
+    background-color:  #FFFAFA;
     margin: 0px;
 }
 h1 {
@@ -130,9 +130,7 @@ button{ // Generic button
             </table>
         </div>
 
-      <!-----ANN:5----> //REMOVE AS THIS IS SURPLUS removed all the RGB values as these are hardcoded
-
-
+      <!-----ANN:5---->
 
       <div class="section">
         <h2>Threshold Minimum-Binary Image</h2>
@@ -169,17 +167,15 @@ button{ // Generic button
         </div>
         <div class="section">
             <table>
-                <tr>
-                    //<td><button type="button" id="invertButton" class="btn btn-primary">INVERT</button></td>
-                    <td><button type="button" id="contourButton" class="btn btn-primary">SHOW CONTOUR</button></td>
-                    <td><button type="button" id="trackButton" class="btn btn-primary">TRACKING</button></td>
-                </tr>
-                <tr>
-                    //<td>Invert: <span id="INVERTdemo"></span></td>
-                    <td>Contour: <span id="CONTOURdemo"></span></td>
-                    <td>Track: <span id="TRACKdemo"></span>
+                <!--<tr>-->
+                    <!--<td><button type="button" id="contourButton" class="btn btn-primary">SHOW CONTOUR</button></td>-->
+                    <!--<td><button type="button" id="trackButton" class="btn btn-primary">TRACKING</button></td>-->
+                <!--</tr>-->
+                <!--<tr>-->
+                    <!--<td>Contour: <span id="CONTOURdemo"></span></td>-->
+                    <!--<td>Track: <span id="TRACKdemo"></span>-->
                     </td>
-                </tr>
+                <!--</tr>-->
             </table>
         </div>
 
@@ -225,12 +221,11 @@ let faceDetection;
 
 //HARDCODE THESE VALUES
 
-let b_tracker = false;
+let b_tracker = true; // tracker has been set to true so can remove button as will always be on.
 let x_cm = 0;
 let y_cm = 0;
 
-//let b_invert = false;
-let b_contour = false;
+let b_contour = false; // Contour is not necessary and probably slows down performance.
 
 
 //THESE VALUES ARE KEY
@@ -343,30 +338,30 @@ async function DetectImage() {
   //ANN:9A
 
 
-  document.getElementById('trackButton').onclick = function(){ // NEED TO SET ALWAYS ON
-    b_tracker = (true && !b_tracker)
-    console.log("TRACKER = " + b_tracker );
-    var TRACKoutput = document.getElementById("TRACKdemo");
-    TRACKoutput.innerHTML = b_tracker;
+  //document.getElementById('trackButton').onclick = function(){ // NEED TO SET ALWAYS ON
+    //b_tracker = (true && !b_tracker)
+    //console.log("TRACKER = " + b_tracker );
+    //var TRACKoutput = document.getElementById("TRACKdemo");
+    //TRACKoutput.innerHTML = b_tracker;
     //var XCMoutput = document.getElementById("XCMdemo");
     //XCMoutput.innerHTML = x_cm;
 
-  }
+  //}
 
 //GOT RID OF INVERT
 /**/
-  document.getElementById('contourButton').onclick = function(){
-    b_contour = (true && !b_contour)
-    console.log("TRACKER = " + b_contour );
-    var CONTOURoutput = document.getElementById("CONTOURdemo");
-    CONTOURoutput.innerHTML = b_contour;
-  }
+//  document.getElementById('contourButton').onclick = function(){
+//    b_contour = (true && !b_contour)
+//    console.log("TRACKER = " + b_contour );
+//    var CONTOURoutput = document.getElementById("CONTOURdemo");
+//    CONTOURoutput.innerHTML = b_contour;
+//  }
 /**/
 
   let tracker = 0;
 
-  var TRACKoutput = document.getElementById("TRACKdemo");
-  TRACKoutput.innerHTML = b_tracker;
+  //var TRACKoutput = document.getElementById("TRACKdemo");
+  //TRACKoutput.innerHTML = b_tracker;
   var XCMoutput = document.getElementById("XCMdemo");
   var YCMoutput = document.getElementById("YCMdemo");
 
@@ -374,8 +369,8 @@ async function DetectImage() {
   YCMoutput.innerHTML = 0;
 
 
-  var CONTOURoutput = document.getElementById("CONTOURdemo");
-  CONTOURoutput.innerHTML = b_contour;
+//  var CONTOURoutput = document.getElementById("CONTOURdemo");
+//  CONTOURoutput.innerHTML = b_contour;
 
   //ANN:8
   let M00Array = [0,];
@@ -553,24 +548,21 @@ async function DetectImage() {
 /******************end contours  note cnt line one up*******************************************/
    drawXCM_YCM_Text();
 
-  }//end try
-  catch{
-    console.log("ERROR TRACKER NO CONTOUR");
-    clear_canvas();
-    drawErrorTracking_Text();
-  }
+  //end try
+//  catch{
+//    console.log("ERROR TRACKER NO CONTOUR");
+//    clear_canvas();
+//    drawErrorTracking_Text();
+//  }
 
-  }//end b_tracking if statement
-  else{
-      XCMoutput.innerHTML = 0;
-      YCMoutput.innerHTML = 0;
-  }
+  //}//end b_tracking if statement
+//  else{
+//      XCMoutput.innerHTML = 0;
+//      YCMoutput.innerHTML = 0;
+//  }
 
-  if(b_invert==false){
+  if(b_tracker==true){
      cv.imshow('imageMask', mask);
-  }
-  else{
-     cv.imshow('imageMask', mask2);
   }
   //cv.imshow('imageMask', R);
   cv.imshow('imageCanvas', src);
