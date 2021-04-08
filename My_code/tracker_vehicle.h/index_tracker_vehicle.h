@@ -498,8 +498,16 @@ async function DetectImage() {
     console.log("XCM = "+Math.round(x_cm));
     console.log("YCM = "+Math.round(y_cm));
 
+
+    /* LOOKS LIKE THIS IS THE COMMAND THAT PASSES THE VALUE TO THE C++ CODE */
+
     //fetch(document.location.origin+'/?xcm='+Math.round(x_cm)+';stop');
     fetch(document.location.origin+'/?cm='+Math.round(x_cm)+';'+Math.round(y_cm)+';stop');
+
+                //MY CODE
+    fetch(document.location.origin+'/?M00='+M00+';'); //Trying to push the value of M00 to the tracker_vehicle code.
+
+
 
     console.log("M00ARRAY = " + M00Array);
 

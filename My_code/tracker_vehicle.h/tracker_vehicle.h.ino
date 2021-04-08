@@ -56,7 +56,7 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 //const int Motor2Pin3 = 13;
 //const int Motor2Pin4 = 14;
 
-void MotorDefault() { // STOPS THE MOTOR MOVING 
+void MotorDefault() { // STOPS THE MOTOR MOVING
   digitalWrite(MOTOR1PIN1, LOW);
   digitalWrite(MOTOR1PIN2, LOW);
 
@@ -78,6 +78,22 @@ void anticlockwise(){
 
   digitalWrite(MOTOR2PIN3,HIGH);
   digitalWrite(MOTOR2PIN4,LOW);
+}
+// NEWLY IMPLEMENTED, NOT YET TESTED 08.04.2021
+void forwards(){
+  digitalWrite(MOTOR1PIN1, HIGH);
+  digitalWrite(MOTOR1PIN2, LOW);
+
+  digitalWrite(MOTOR2PIN3,HIGH);
+  digitalWrite(MOTOR2PIN4,LOW);
+}
+
+void backwards(){
+  digitalWrite(MOTOR1PIN1, LOW);
+  digitalWrite(MOTOR1PIN2, HIGH);
+
+  digitalWrite(MOTOR2PIN3,LOW);
+  digitalWrite(MOTOR2PIN4,HIGH);
 }
 
 WiFiServer server(80);
@@ -121,14 +137,24 @@ void ExecuteCommand() {
       Serial.println("clockwise");
     }
   }
-  else if (cmd=="MAXAREAARG"){
-    int MaxAreaArgs = P1.toInt();
-    Serial.println("cmd= " + cmd + "MAXAREARGS="+MaxAreaArgs); // NOT SURE IF THIS WILL WORK BUT WANT TO PRINT THE VALUE OF THIS ARRAY, May need to use a different value, look to M00 and cnt.
+  else if (cmd=="M00"){ //The command M00 gives an area size for the object  being tracked. This if statement introduces the M00 value into the code.
+    int M00 = P1.toInt();
+    Serial.println("cmd= " + cmd + "M00="+M00); // This allows visual confirmation that a value of M00 is found.
+
+
+    if (M00 >= 9000){ // IF DISTANCE IS LESS THAN .... MOVE BACKWARDS
+      backwards();
+      Serial.println("backwards");
+    }
+
+    else if (M00 <= 7000) // IF DISTANCE IS GREATER THAN .... MOVE FORWARDS
+    forwards();
+    Serial.println("forwards");
   }
 
 /* Once the size of the object can be determined in pixels it needs to be converted back into value of distance away from vehicle*/
 /* Alternatively the distance the vehicle sits can be made a constant which is a much greater idea. */
-  
+
   else if (cmd=="quality") {
     sensor_t * s = esp_camera_sensor_get();
     int val = P1.toInt();
@@ -329,7 +355,7 @@ void loop() {
     client.stop();
   }
 }
-
+//MAY NEED TO INVESTIGATE THIS FURTHER TO PULL DATA FROM THE HTML PAGE
 void getCommand(char c){
   if (c=='?') ReceiveState=1;
   if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;

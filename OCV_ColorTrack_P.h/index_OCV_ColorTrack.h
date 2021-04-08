@@ -1,8 +1,8 @@
 /****************************
   This include file, index_OCV_ColorTrack.h, the Client, is an intoduction of OpenCV.js to the ESP32 Camera environment. The Client was
   developed and written by Andrew R. Sass. Permission to reproduce the index_OCV_ColorTrack.h file is granted free of charge if this
-  entire copyright notice is included in all copies of the index_OCV_ColorTrack.h file. 
-  
+  entire copyright notice is included in all copies of the index_OCV_ColorTrack.h file.
+
   Complete instructions at https://RandomNerdTutorials.com/esp32-cam-opencv-js-color-detection-tracking/
 *******************************/
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
@@ -19,7 +19,7 @@ static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 html {
     font-family: Arial, Helvetica, sans-serif;
     }
-body { 
+body {
     background-color: #F7F7F2;
     margin: 0px;
 }
@@ -38,7 +38,7 @@ h1 {
 h2 {
     color: #0A1128;
     font-size: 1rem;
-}    
+}
 .section {
     margin: 2px;
     padding: 10px;
@@ -60,7 +60,7 @@ th{
     margin-left:50px;
 }
 
-#colorDetect{ 
+#colorDetect{
     border: none;
     color: #FEFCFB;
     background-color: #0A1128;
@@ -78,7 +78,7 @@ th{
     text-align: center;
     display: inline-block;
     font-size: 16px;
-    border-radius: 4px;  
+    border-radius: 4px;
 }
 button{
     border: none;
@@ -87,7 +87,7 @@ button{
     padding: 10px;
     text-align: center;
     display: inline-block;
-    border-radius: 4px;    
+    border-radius: 4px;
 }
 
 </style>
@@ -98,17 +98,17 @@ button{
     <div class="main-controls">
         <table>
             <tr>
-                <td><center><input type="button" id="colorDetect" value="COLOR DETECTION"></center></td> 
-                <td><center><input type="button" id="restart" value="RESET BOARD"></center></td> 
-            </tr>      
+                <td><center><input type="button" id="colorDetect" value="COLOR DETECTION"></center></td>
+                <td><center><input type="button" id="restart" value="RESET BOARD"></center></td>
+            </tr>
         </table>
     </div>
 <div class="container">
-  <div class = "row"> 
-    <div class = "column"> 
+  <div class = "row">
+    <div class = "column">
         <div class="section">
             <div class ="video-container">
-                <h2>Video Streaming</h2>   
+                <h2>Video Streaming</h2>
                 <center><img id="ShowImage" src="" style="display:none"></center>
                 <center><canvas id="canvas" style="display:none"></canvas></center>
             </div>
@@ -129,7 +129,7 @@ button{
               </tr>
             </table>
         </div>
- 
+
       <!-----ANN:5---->
       <div class="section">
         <h2>RGB Color Trackbars</h2>
@@ -164,7 +164,7 @@ button{
             </tr>
         </table>
     </div>
-     <!----ANN:9---> 
+     <!----ANN:9--->
      <div class="section">
         <h2>Color Probe</h2>
         <table>
@@ -176,10 +176,10 @@ button{
             </tr>
         </table>
       </div>
-            
-    </div>   <!------endfirstcolumn---------------->   
-    
-    <div class = "column">      
+
+    </div>   <!------endfirstcolumn---------------->
+
+    <div class = "column">
         <div class="section">
             <h2>Image Mask</h2>
             <canvas id="imageMask"></canvas>
@@ -211,14 +211,14 @@ button{
                 </tr>
             </table>
         </div>
-        
+
         <div class="section">
             <canvas id="textCanvas" width="480" height="180" style= "border: 1px solid #black;"></canvas>
             <iframe id="ifr" style="display:none"></iframe>
-            <div id="message"></div>  
-        </div>             
+            <div id="message"></div>
+        </div>
         </div>  <!------end2ndcolumn------------------------>
-  </div>   <!-----endrow---------------------->   
+  </div>   <!-----endrow---------------------->
 </div>   <!------endcontainer-------------->
  <!--------------- </body>----------------->
  <!----------------</html>----------------->
@@ -229,11 +229,11 @@ var ShowImage = document.getElementById('ShowImage');
 var canvas = document.getElementById("canvas");
 var context = canvas.getContext("2d");
 var imageMask = document.getElementById("imageMask");
-var imageMaskContext = imageMask.getContext("2d"); 
+var imageMaskContext = imageMask.getContext("2d");
 var imageCanvas = document.getElementById("imageCanvas");
-var imageContext = imageCanvas.getContext("2d"); 
+var imageContext = imageCanvas.getContext("2d");
 var txtcanvas = document.getElementById("textCanvas");
-var ctx = txtcanvas.getContext("2d");  
+var ctx = txtcanvas.getContext("2d");
 var message = document.getElementById('message');
 var ifr = document.getElementById('ifr');
 var myTimer;
@@ -267,7 +267,7 @@ var A=0;
 
 
 colorDetect.onclick = function (event) {
-  clearInterval(myTimer);  
+  clearInterval(myTimer);
   myTimer = setInterval(function(){error_handle();},5000);
   ShowImage.src=location.origin+'/?colorDetect='+Math.random();
 }
@@ -280,11 +280,11 @@ var Module = {
 function onOpenCvReady(){
   //alert("onOpenCvReady");
   console.log("OpenCV IS READY!!!");
-  drawReadyText();  
+  drawReadyText();
   document.body.classList.remove("loading");
 }
 
-    
+
 function error_handle() {
   restartCount++;
   clearInterval(myTimer);
@@ -295,13 +295,13 @@ function error_handle() {
   }
   else
     message.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
-}    
+}
 colorDetect.style.display = "block";
 ShowImage.onload = function (event) {
   //alert("SHOW IMAGE");
   console.log("SHOW iMAGE");
   clearInterval(myTimer);
-  restartCount=0;      
+  restartCount=0;
   canvas.setAttribute("width", ShowImage.width);
   canvas.setAttribute("height", ShowImage.height);
   canvas.style.display = "block";
@@ -311,24 +311,24 @@ ShowImage.onload = function (event) {
 
   imageMask.setAttribute("width", ShowImage.width);
   imageMask.setAttribute("height", ShowImage.height);
-  imageMask.style.display = "block";      
-      
+  imageMask.style.display = "block";
+
   context.drawImage(ShowImage,0,0,ShowImage.width,ShowImage.height);
-  
-  DetectImage();        
+
+  DetectImage();
 }
 restart.onclick = function (event) {
   fetch(location.origin+'/?restart=stop');
 }
 quality.onclick = function (event) {
   fetch(document.location.origin+'/?quality='+this.value+';stop');
-} 
+}
 brightness.onclick = function (event) {
   fetch(document.location.origin+'/?brightness='+this.value+';stop');
-} 
+}
 contrast.onclick = function (event) {
   fetch(document.location.origin+'/?contrast='+this.value+';stop');
-}                             
+}
 async function DetectImage() {
   //alert("DETECT IMAGE");
   console.log("DETECT IMAGE");
@@ -345,11 +345,11 @@ async function DetectImage() {
   console.log("rows = " + arows);
   console.log("cols = " + acols);
   console.log("pic area = " + aarea);
-  console.log("depth = " + adepth); 
-  console.log("type = " + atype); 
+  console.log("depth = " + adepth);
+  console.log("type = " + atype);
   console.log("channels = " + achannels);
-  
-  /******************COLOR DETECT******************************/ 
+
+  /******************COLOR DETECT******************************/
 
   /* These values need to be hardcoded to give a best fit model, This will stop the requirement to tune the model before each usage*/
 
@@ -430,7 +430,7 @@ async function DetectImage() {
   X_PROBEoutput.innerHTML = this.value;
   X_PROBE = parseInt(X_PROBEoutput.innerHTML,10);
   }
-  console.log("X_PROBE=" + X_PROBE); 
+  console.log("X_PROBE=" + X_PROBE);
 
   var Y_PROBEslider = document.getElementById("y_probe");
   var Y_PROBEoutput = document.getElementById("Y_PROBEdemo");
@@ -439,49 +439,49 @@ async function DetectImage() {
   Y_PROBEoutput.innerHTML = this.value;
   Y_PROBE = parseInt(Y_PROBEoutput.innerHTML,10);
   }
-  console.log("Y_PROBE=" + Y_PROBE); 
+  console.log("Y_PROBE=" + Y_PROBE);
 
 
   document.getElementById('trackButton').onclick = function(){
-    b_tracker = (true && !b_tracker)  
+    b_tracker = (true && !b_tracker)
     console.log("TRACKER = " + b_tracker );
     var TRACKoutput = document.getElementById("TRACKdemo");
     TRACKoutput.innerHTML = b_tracker;
     //var XCMoutput = document.getElementById("XCMdemo");
     //XCMoutput.innerHTML = x_cm;
- 
-  }  
+
+  }
 
   document.getElementById('invertButton').onclick = function(){
-    b_invert = (true && !b_invert)  
+    b_invert = (true && !b_invert)
     console.log("TRACKER = " + b_invert );
     var INVERToutput = document.getElementById("INVERTdemo");
     INVERToutput.innerHTML = b_invert;
-  }  
+  }
 /**/
   document.getElementById('contourButton').onclick = function(){
-    b_contour = (true && !b_contour)  
+    b_contour = (true && !b_contour)
     console.log("TRACKER = " + b_contour );
     var CONTOURoutput = document.getElementById("CONTOURdemo");
     CONTOURoutput.innerHTML = b_contour;
-  } 
-/**/ 
+  }
+/**/
 
   let tracker = 0;
-  
+
   var TRACKoutput = document.getElementById("TRACKdemo");
   TRACKoutput.innerHTML = b_tracker;
   var XCMoutput = document.getElementById("XCMdemo");
   var YCMoutput = document.getElementById("YCMdemo");
 
   XCMoutput.innerHTML = 0;
-  YCMoutput.innerHTML = 0; 
+  YCMoutput.innerHTML = 0;
 
   var INVERToutput = document.getElementById("INVERTdemo");
-  INVERToutput.innerHTML = b_invert;  
+  INVERToutput.innerHTML = b_invert;
 
   var CONTOURoutput = document.getElementById("CONTOURdemo");
-  CONTOURoutput.innerHTML = b_contour;   
+  CONTOURoutput.innerHTML = b_contour;
 
   //ANN:8
   let M00Array = [0,];
@@ -492,23 +492,23 @@ async function DetectImage() {
   let contours = new cv.MatVector();
   let hierarchy = new cv.Mat();
   let rgbaPlanes = new cv.MatVector();
-    
+
   let color = new cv.Scalar(0,0,0);
 
   clear_canvas();
 
 
-    
+
   orig = cv.imread(ShowImage);
   cv.split(orig,rgbaPlanes);  //SPLIT
   let BP = rgbaPlanes.get(2);  // SELECTED COLOR PLANE
   let GP = rgbaPlanes.get(1);
   let RP = rgbaPlanes.get(0);
   cv.merge(rgbaPlanes,orig);
-   
-    
+
+
               //   BLK    BLU   GRN   RED
-  let row = Y_PROBE //180//275 //225 //150 //130    
+  let row = Y_PROBE //180//275 //225 //150 //130
   let col = X_PROBE //100//10 //100 //200 //300
   drawColRowText(acols,arows);
 
@@ -526,9 +526,9 @@ async function DetectImage() {
   console.log("ADATA = " + A);
 
   drawRGB_PROBE_Text();
-  
-   
-    
+
+
+
   //ANN:9b
   //*************draw probe point*********************
   let point4 = new cv.Point(col,row);
@@ -541,7 +541,7 @@ async function DetectImage() {
 
   cv.inRange(src,low,high,mask1);
   //inRange(source image, lower limit, higher limit, destination image)
-    
+
   cv.threshold(mask1,mask,THRESH_MIN,255,cv.THRESH_BINARY);
   //threshold(source image,destination image,threshold,255,threshold method);
 
@@ -554,7 +554,7 @@ async function DetectImage() {
   if(b_tracker == true){
   try{
    if(b_invert==false){
-    //ANN:11   
+    //ANN:11
     cv.findContours(mask,contours,hierarchy,cv.RETR_CCOMP,cv.CHAIN_APPROX_SIMPLE);
     //findContours(source image, array of contours found, hierarchy of contours
         // if contours are inside other contours, method of contour data retrieval,
@@ -579,10 +579,10 @@ async function DetectImage() {
     let M10;
     //let x_cm;
     //let y_cm;
-    
+
     //ANN:13
     for(let k = 0; k < contours.size(); k++){
-        cnt = contours.get(k); 
+        cnt = contours.get(k);
         Moments = cv.moments(cnt,false);
         M00Array[k] = Moments.m00;
        // cnt.delete();
@@ -613,17 +613,18 @@ async function DetectImage() {
     XCMoutput.innerHTML = Math.round(x_cm);
     YCMoutput.innerHTML = Math.round(y_cm);
 
-    console.log("M00 = "+M00);  
+    console.log("M00 = "+M00);
     console.log("XCM = "+Math.round(x_cm));
-    console.log("YCM = "+Math.round(y_cm)); 
+    console.log("YCM = "+Math.round(y_cm));
+
 
     //fetch(document.location.origin+'/?xcm='+Math.round(x_cm)+';stop');
     fetch(document.location.origin+'/?cm='+Math.round(x_cm)+';'+Math.round(y_cm)+';stop');
 
     console.log("M00ARRAY = " + M00Array);
 
-    //ANN:14   
-    
+    //ANN:14
+
     //**************min area bounding rect********************
     //let rotatedRect=cv.minAreaRect(cnt);
     //let vertices = cv.RotatedRect.points(rotatedRect);
@@ -639,7 +640,7 @@ async function DetectImage() {
     let rect = cv.boundingRect(cnt);
     let point1 = new cv.Point(rect.x,rect.y);
     let point2 = new cv.Point(rect.x+rect.width,rect.y+rect.height);
-    
+
     cv.rectangle(src,point1,point2,[0,0,255,255],2,cv.LINE_AA,0);
     //*************end bounding rect***************************
 
@@ -651,7 +652,7 @@ async function DetectImage() {
 
     }//end if(ArgMaxArea >= 0)
     else{
-      if(ArgMaxArea==-1){ 
+      if(ArgMaxArea==-1){
         console.log("ZERO ARRAY LENGTH");
       }
       else{              //ArgMaxArea=-2
@@ -672,12 +673,12 @@ async function DetectImage() {
     clear_canvas();
     drawErrorTracking_Text();
   }
-    
+
   }//end b_tracking if statement
   else{
       XCMoutput.innerHTML = 0;
       YCMoutput.innerHTML = 0;
-  }    
+  }
 
   if(b_invert==false){
      cv.imshow('imageMask', mask);
@@ -700,18 +701,18 @@ async function DetectImage() {
   hierarchy.delete();
   //cnt.delete();
   RP.delete();
-    
-  
+
+
 
 
  /********************END COLOR DETECT****************************/
-  
+
 /***************end opencv******************************/
-      
+
 
  setTimeout(function(){colorDetect.click();},500);
-  
-}//end detectimage 
+
+}//end detectimage
 
 
 function MaxAreaArg(arr){
@@ -744,8 +745,8 @@ function MaxAreaArg(arr){
 
     else{
         return -2;
-    }        
-}//end MaxAreaArg    
+    }
+}//end MaxAreaArg
 
 
 
@@ -760,14 +761,14 @@ function drawReadyText(){
     ctx.fillStyle = 'black';
     ctx.font = '20px serif';
     ctx.fillText('OpenCV.JS READY',txtcanvas.width/4,txtcanvas.height/10);
-}          
+}
 
 function drawColRowText(x,y){
     ctx.fillStyle = 'black';
     ctx.font = '20px serif';
     ctx.fillText('ImageCols='+x,0,txtcanvas.height/10);
     ctx.fillText('ImageRows='+y,txtcanvas.width/2,txtcanvas.height/10);
-} 
+}
 
 function drawRGB_PROBE_Text(){
     ctx.fillStyle = 'black';
@@ -781,17 +782,17 @@ function drawRGB_PROBE_Text(){
 function drawXCM_YCM_Text(){
     ctx.fillStyle = 'black';
     ctx.font = '20px serif';
-    ctx.fillText('XCM='+Math.round(x_cm),0,3*txtcanvas.height/10); 
-    ctx.fillText('YCM='+Math.round(y_cm),txtcanvas.width/4,3*txtcanvas.height/10);    
+    ctx.fillText('XCM='+Math.round(x_cm),0,3*txtcanvas.height/10);
+    ctx.fillText('YCM='+Math.round(y_cm),txtcanvas.width/4,3*txtcanvas.height/10);
 }
 
 function drawErrorTracking_Text(){
     ctx.fillStyle = 'black';
     ctx.font = '20px serif';
     ctx.fillText('ERROR TRACKING-NO CONTOUR',0,3*txtcanvas.height/10);
-}          
-         
-  </script> 
+}
+
+  </script>
 </body>
-</html>  
+</html>
 )rawliteral";
