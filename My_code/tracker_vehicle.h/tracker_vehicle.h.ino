@@ -51,10 +51,6 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 #define MOTOR2PIN4        14
 
 
-//const int Motor1Pin1 = 15;
-//const int Motor1Pin2 = 12;
-//const int Motor2Pin3 = 13;
-//const int Motor2Pin4 = 14;
 
 void MotorDefault() { // STOPS THE MOTOR MOVING
   digitalWrite(MOTOR1PIN1, LOW);
@@ -123,18 +119,27 @@ void ExecuteCommand() {
   }
   else if (cmd=="cm"){
     int XcmVal = P1.toInt();
-    int YcmVal = P2.toInt();
     Serial.println("cmd= "+cmd+" ,VALXCM= "+XcmVal);
+
+
+
+
+
+
 
     /*THIS IS THE CODE I HAVE ADDED MYSELF*/
 
-    if (XcmVal >= 180){   //If the object is in the right half of screen turn anticlockwise
+    if (XcmVal >= 140 && XcmVal != 0){   //If the object is in the right half of screen turn anticlockwise
       anticlockwise();
       Serial.println("anti-clockwise");
     }
-    else if (XcmVal <= 240 ){
+    else if (XcmVal <= 300 && XcmVal != 0){
       clockwise();
       Serial.println("clockwise");
+    }
+    else {  // else function just to stop constant movement, will need tweaking
+      MotorDefault();
+      Serial.println("Centered");
     }
   }
   else if (cmd=="M00"){ //The command M00 gives an area size for the object  being tracked. This if statement introduces the M00 value into the code.
@@ -142,19 +147,33 @@ void ExecuteCommand() {
     Serial.println("cmd= " + cmd + "M00="+M00); // This allows visual confirmation that a value of M00 is found.
 
 
-    if (M00 >= 9000){ // IF DISTANCE IS LESS THAN .... MOVE BACKWARDS
+    if (M00 >= 12000 && M00 != 0){ // IF DISTANCE IS LESS THAN .... MOVE BACKWARDS
       backwards();
       Serial.println("backwards");
     }
 
-    else if (M00 <= 7000) // IF DISTANCE IS GREATER THAN .... MOVE FORWARDS
+    else if (M00 <= 6000 && M00 != 0){ // IF DISTANCE IS GREATER THAN .... MOVE FORWARDS
     forwards();
     Serial.println("forwards");
+    }
+    else { // else function just to stop constant movement, will need tweaking
+      MotorDefault();
+      Serial.println("Correct Distance");
+    }
   }
+
+
+
+
+
+
 
 /* Once the size of the object can be determined in pixels it needs to be converted back into value of distance away from vehicle*/
 /* Alternatively the distance the vehicle sits can be made a constant which is a much greater idea. */
+/* Using a value of M00 I can divide the actual value by the expected value of M00 and then multiply by the known distance from target  */
 
+
+// THESE FUNCTIONS BELOW CAN PROBABLY BE REMOVED AS I AM NOT MODIFYING THEM
   else if (cmd=="quality") {
     sensor_t * s = esp_camera_sensor_get();
     int val = P1.toInt();
@@ -250,14 +269,14 @@ void setup() {
   if (WiFi.status() == WL_CONNECTED) {
     Serial.print("ESP IP Address: http://");
     Serial.println(WiFi.localIP());
-    digitalWrite(LED_BUILTIN,HIGH);
+                //digitalWrite(LED_BUILTIN,HIGH); // ADD OR REMOVE TO CHANGE THE LED FLASHLIGHT
   }
   server.begin();
 }
 
 
 
-void loop() {
+void loop() { // Predefined code that pulls the console printout from the html webpage
   Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
   ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
 

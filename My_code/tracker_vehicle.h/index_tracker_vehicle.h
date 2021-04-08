@@ -67,7 +67,7 @@ th{
     padding: 15px;
     text-align: center;
     display: inline-block;
-    font-size: 16px;
+    font-size: 24px;
     border-radius: 4px;
 }
 #restart{ // Button to restart the ESP32 Module
@@ -77,7 +77,7 @@ th{
     padding: 15px;
     text-align: center;
     display: inline-block;
-    font-size: 16px;
+    font-size: 24px;
     border-radius: 4px;
 }
 button{ // Generic button
@@ -98,8 +98,8 @@ button{ // Generic button
     <div class="main-controls">
         <table>
             <tr>
-                <td><center><input type="button" id="track" value="COLOR DETECTION"></center></td>
-                <td><center><input type="button" id="restart" value="RESET BOARD"></center></td>
+                <td><center><input type="button" id="track" value="Object Tracking"></center></td>
+                <td><center><input type="button" id="restart" value="Reset Board"></center></td>
             </tr>
         </table>
     </div>
@@ -113,26 +113,11 @@ button{ // Generic button
                 <center><canvas id="canvas" style="display:none"></canvas></center>
             </div>
         </div>
-        <div class="section">
-            <table>
-              <tr>
-                  <td>Quality</td>
-                  <td><input type="range" id="quality" min="10" max="63" value="10"></td>
-              </tr>
-              <tr>
-                  <td>Brightness</td>
-                  <td><input type="range" id="brightness" min="-2" max="2" value="0"></td>
-              </tr>
-              <tr>
-                  <td>Contrast</td>
-                  <td><input type="range" id="contrast" min="-2" max="2" value="0"></td>
-              </tr>
-            </table>
-        </div>
+
 
       <!-----ANN:5---->
 
-      <div class="section">
+    <!--  <div class="section">
         <h2>Threshold Minimum-Binary Image</h2>
         <table>
             <tr>
@@ -140,20 +125,7 @@ button{ // Generic button
                 <td><input type="range" id="thresh_min" min="0" max="255" value="120" class = "slider">  </td>
             </tr>
         </table>
-      </div>
-     <!----ANN:9--->
-     <div class="section">
-        <h2>Color Probe</h2>
-        <table>
-            <tr>
-                <td>X probe:&#160;&#160;&#160;<span id="X_PROBEdemo"></span></td>
-                <td><input type="range" id="x_probe" min="0" max="400" value="200" class = "slider"></td>
-                <td>Y probe:&#160;&#160;&#160;<span id="Y_PROBEdemo"></span></td>
-                <td> <input type="range" id="y_probe" min="0" max="296" value="148" class = "slider"></td>
-            </tr>
-        </table>
-      </div>
-
+      </div> -->
     </div>   <!------endfirstcolumn---------------->
 
     <div class = "column">
@@ -165,19 +137,7 @@ button{ // Generic button
             <h2>Image Canvas</h2>
             <canvas id="imageCanvas"></canvas>
         </div>
-        <div class="section">
-            <table>
-                <!--<tr>-->
-                    <!--<td><button type="button" id="contourButton" class="btn btn-primary">SHOW CONTOUR</button></td>-->
-                    <!--<td><button type="button" id="trackButton" class="btn btn-primary">TRACKING</button></td>-->
-                <!--</tr>-->
-                <!--<tr>-->
-                    <!--<td>Contour: <span id="CONTOURdemo"></span></td>-->
-                    <!--<td>Track: <span id="TRACKdemo"></span>-->
-                    </td>
-                <!--</tr>-->
-            </table>
-        </div>
+
 
         <div class="section">
             <table>
@@ -199,7 +159,7 @@ button{ // Generic button
  <!--------------- </body>----------------->
  <!----------------</html>----------------->
 <div class="modal"></div>
-<script>                                                              // THIS IS WHERE THE TRACKING SCRIPT BEGINS
+<script>
 var colorDetect = document.getElementById('track');                   // Modified this to track
 var ShowImage = document.getElementById('ShowImage');
 var canvas = document.getElementById("canvas");
@@ -219,7 +179,6 @@ let currentStream;
 let displaySize = { width:400, height: 296 }
 let faceDetection;
 
-//HARDCODE THESE VALUES
 
 let b_tracker = true; // tracker has been set to true so can remove button as will always be on.
 let x_cm = 0;
@@ -228,7 +187,7 @@ let y_cm = 0;
 let b_contour = false; // Contour is not necessary and probably slows down performance.
 
 
-//THESE VALUES ARE KEY
+//THESE VALUES ARE KEY as they determine the RBG range to be tracked
 
 var RMAX=217;
 var RMIN=30;
@@ -237,19 +196,16 @@ var GMIN=150;
 var BMAX=255;
 var BMIN=180;
 var THRESH_MIN=120;
-var X_PROBE=200;
-var Y_PROBE=196;
-var R=0;
-var G=0;
-var B=0;
-var A=0;
 
 
-colorDetect.onclick = function (event) {
+
+colorDetect.onclick = function (event) { //When the button is pressed the image tracking begins
+
   clearInterval(myTimer);
   myTimer = setInterval(function(){error_handle();},5000);
   ShowImage.src=location.origin+'/?colorDetect='+Math.random();
 }
+
 
 //ANN:READY
 var Module = {
@@ -257,14 +213,13 @@ var Module = {
 }
 
 function onOpenCvReady(){
-  //alert("onOpenCvReady");
   console.log("OpenCV IS READY!!!");
-  drawReadyText();
+  drawReadyText(); // Displays the fact that opencv is ready to webpage canvas
   document.body.classList.remove("loading");
 }
 
 
-function error_handle() {
+function error_handle() { // Handles any unexpected errors
   restartCount++;
   clearInterval(myTimer);
   if (restartCount<=2) {
@@ -275,9 +230,11 @@ function error_handle() {
   else
     message.innerHTML = "Get still error. <br>Please close the page and check ESP32-CAM.";
 }
+
+
 colorDetect.style.display = "block";
-ShowImage.onload = function (event) {
-  //alert("SHOW IMAGE");
+
+ShowImage.onload = function (event) { // When image is found run the following...
   console.log("SHOW iMAGE");
   clearInterval(myTimer);
   restartCount=0;
@@ -296,20 +253,14 @@ ShowImage.onload = function (event) {
 
   DetectImage();
 }
+
+
 restart.onclick = function (event) {
   fetch(location.origin+'/?restart=stop');
 }
-quality.onclick = function (event) {
-  fetch(document.location.origin+'/?quality='+this.value+';stop');
-}
-brightness.onclick = function (event) {
-  fetch(document.location.origin+'/?brightness='+this.value+';stop');
-}
-contrast.onclick = function (event) {
-  fetch(document.location.origin+'/?contrast='+this.value+';stop');
-}
-async function DetectImage() {
-  //alert("DETECT IMAGE");
+
+
+async function DetectImage() { // Function that contains the cv model
   console.log("DETECT IMAGE");
 
   /***************opencv********************************/
@@ -329,34 +280,6 @@ async function DetectImage() {
   console.log("channels = " + achannels);
 
   /******************COLOR DETECT******************************/
-
-  /* These values need to be hardcoded to give a best fit model, This will stop the requirement to tune the model before each usage*/
-
-  //ANN:6  TRY removing these and see what we get out of it.
-  // REMOVED THE RGB MIN MAX VALUES AND WILL HARDCODE THESE
-
-  //ANN:9A
-
-
-  //document.getElementById('trackButton').onclick = function(){ // NEED TO SET ALWAYS ON
-    //b_tracker = (true && !b_tracker)
-    //console.log("TRACKER = " + b_tracker );
-    //var TRACKoutput = document.getElementById("TRACKdemo");
-    //TRACKoutput.innerHTML = b_tracker;
-    //var XCMoutput = document.getElementById("XCMdemo");
-    //XCMoutput.innerHTML = x_cm;
-
-  //}
-
-//GOT RID OF INVERT
-/**/
-//  document.getElementById('contourButton').onclick = function(){
-//    b_contour = (true && !b_contour)
-//    console.log("TRACKER = " + b_contour );
-//    var CONTOURoutput = document.getElementById("CONTOURdemo");
-//    CONTOURoutput.innerHTML = b_contour;
-//  }
-/**/
 
   let tracker = 0;
 
@@ -396,33 +319,13 @@ async function DetectImage() {
   cv.merge(rgbaPlanes,orig);
 
 
-              //   BLK    BLU   GRN   RED
-  let row = Y_PROBE //180//275 //225 //150 //130
-  let col = X_PROBE //100//10 //100 //200 //300
-  drawColRowText(acols,arows);
-
 
   console.log("ISCONTINUOUS = " + orig.isContinuous());
 
-  //ANN:9C
-  R = src.data[row * src.cols * src.channels() + col * src.channels()];
-  G = src.data[row * src.cols * src.channels() + col * src.channels() + 1];
-  B = src.data[row * src.cols * src.channels() + col * src.channels() + 2];
-  A = src.data[row * src.cols * src.channels() + col * src.channels() + 3];
-  console.log("RDATA = " + R);
-  console.log("GDATA = " + G);
-  console.log("BDATA = " + B);
-  console.log("ADATA = " + A);
-
-  drawRGB_PROBE_Text();
 
 
 
-  //ANN:9b
-  //*************draw probe point*********************
-  let point4 = new cv.Point(col,row);
-  cv.circle(src,point4,5,[255,255,255,255],2,cv.LINE_AA,0);
-  //***********end draw probe point*********************
+
 
   //ANN:7
   let high = new cv.Mat(src.rows,src.cols,src.type(),[RMAX,GMAX,BMAX,255]);
@@ -436,16 +339,16 @@ async function DetectImage() {
 
 
 
-/********************start contours******************************************/ // Using contours so don't remove
+/********************start contours******************************************/
   //ANN:10
-  if(b_tracker == true){ // I have removed the invert if statement as it is kind of pointless for my needs
+  if(b_tracker == true){ // if tracking then find contours of object
 
     cv.findContours(mask,contours,hierarchy,cv.RETR_CCOMP,cv.CHAIN_APPROX_SIMPLE);
     //findContours(source image, array of contours found, hierarchy of contours
         // if contours are inside other contours, method of contour data retrieval,
         //algorithm method)
    }
-    console.log("CONTOUR_SIZE = " + contours.size());
+    console.log("CONTOUR_SIZE = " + contours.size());  // Compare this to M00 for finding distance.
 
     //draw contours
     if(b_contour==true){
@@ -459,8 +362,8 @@ async function DetectImage() {
     let Moments;
     let M00;
     let M10;
-    //let x_cm;
-    //let y_cm;
+
+
 
     //ANN:13
     for(let k = 0; k < contours.size(); k++){
@@ -470,19 +373,15 @@ async function DetectImage() {
        // cnt.delete();
     }
 
-    //ANN13A
+
     let max_area_arg = MaxAreaArg(M00Array);
     console.log("MAXAREAARG = "+max_area_arg);
 
-    //let TestArray = [0,0,0,15,4,15,2];
-    //let TestArray0 = [];
-    //let max_test_area_arg = MaxAreaArg(TestArray0);
-    //console.log("MAXTESTAREAARG = "+max_test_area_arg);
 
-    /*NEED TO USE THIS CODE BELOW TO GET THE MAX AREA OF THE SHAPE AND THEN USE THAT TO MOVE THE ROBOT FORWARDS AND BACKWARDS*/
+
     let ArgMaxArea = MaxAreaArg(M00Array);
     if(ArgMaxArea >= 0){
-    cnt = contours.get(MaxAreaArg(M00Array));  //use the contour with biggest MOO
+    cnt = contours.get(MaxAreaArg(M00Array));
     //cnt = contours.get(54);
     Moments = cv.moments(cnt,false);
     M00 = Moments.m00;
@@ -505,7 +404,7 @@ async function DetectImage() {
     fetch(document.location.origin+'/?cm='+Math.round(x_cm)+';'+Math.round(y_cm)+';stop');
 
                 //MY CODE
-    fetch(document.location.origin+'/?M00='+M00+';'); //Trying to push the value of M00 to the tracker_vehicle code.
+    fetch(document.location.origin+'/?M00='+M00+';'); //Gives the value of M00 through the console to tracker_vehicle.h
 
 
 
@@ -553,7 +452,7 @@ async function DetectImage() {
 
     cnt.delete();
 /******************end contours  note cnt line one up*******************************************/
-   drawXCM_YCM_Text();
+
 
   //end try
 //  catch{
@@ -638,7 +537,7 @@ function MaxAreaArg(arr){
 function clear_canvas(){
     ctx.clearRect(0,0,txtcanvas.width,txtcanvas.height);
     ctx.rect(0,0,txtcanvas.width,txtcanvas.height);
-    ctx.fillStyle="red";
+    ctx.fillStyle="white";
     ctx.fill();
 }
 
@@ -655,14 +554,6 @@ function drawColRowText(x,y){
     ctx.fillText('ImageRows='+y,txtcanvas.width/2,txtcanvas.height/10);
 }
 
-function drawRGB_PROBE_Text(){
-    ctx.fillStyle = 'black';
-    ctx.font = '20px serif';
-    ctx.fillText('Rp='+R,0,2*txtcanvas.height/10);
-    ctx.fillText('Gp='+G,txtcanvas.width/4,2*txtcanvas.height/10);
-    ctx.fillText('Bp='+B,txtcanvas.width/2,2*txtcanvas.height/10);
-    ctx.fillText('Ap='+A,3*txtcanvas.width/4,2*txtcanvas.height/10);
-}
 
 function drawXCM_YCM_Text(){
     ctx.fillStyle = 'black';
