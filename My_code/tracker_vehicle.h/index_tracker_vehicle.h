@@ -380,7 +380,7 @@ async function DetectImage() { // Function that contains the cv model
 
 
     let ArgMaxArea = MaxAreaArg(M00Array);
-    if(ArgMaxArea >= 0){
+    if(ArgMaxArea > 0){
     cnt = contours.get(MaxAreaArg(M00Array));
     //cnt = contours.get(54);
     Moments = cv.moments(cnt,false);
@@ -403,7 +403,8 @@ async function DetectImage() { // Function that contains the cv model
     //fetch(document.location.origin+'/?xcm='+Math.round(x_cm)+';stop');
     fetch(document.location.origin+'/?cm='+Math.round(x_cm)+';'+Math.round(y_cm)+';stop');
 
-                //MY CODE
+    //MY CODE
+
     fetch(document.location.origin+'/?M00='+M00+';'); //Gives the value of M00 through the console to tracker_vehicle.h
 
 
@@ -443,14 +444,14 @@ async function DetectImage() { // Function that contains the cv model
         console.log("ZERO ARRAY LENGTH");
       }
       else{              //ArgMaxArea=-2
-        console.log("DUPLICATE MAX ARRAY-ELEMENT");
+        console.log("Nothing detected");
       }
     }
 
 
 
 
-    cnt.delete();
+//    cnt.delete();
 /******************end contours  note cnt line one up*******************************************/
 
 
