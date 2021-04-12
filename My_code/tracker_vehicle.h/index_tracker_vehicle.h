@@ -116,7 +116,11 @@ button{ // Generic button
 
         <div class="section"><!-----ADDING IN A NEW SECTION FOR HSV MASK--->
             <h2>HSVcancas</h2>
-            <canvas id="HSVcanvas"></canvas>
+           <center> <canvas id="HSVcanvas"></canvas></center>
+        </div>
+        <div class="section"><!-----ADDING IN A NEW SECTION FOR HSV MASK--->
+            <h2>HSVcancas2</h2>
+            <center><canvas id="HSVcanvas2"></canvas></center>
         </div>
 
     </div>   <!------endfirstcolumn---------------->
@@ -160,6 +164,8 @@ var context = canvas.getContext("2d");
 
 var HSVcanvas = document.getElementById('HSVcanvas'); //ADDED
 var HSVcontext = canvas.getContext("2d"); //ADDED
+var HSVcanvas2 = document.getElementById('HSVcanvas2'); //ADDED
+var HSVcontext2 = canvas.getContext("2d"); //ADDED
 
 var imageMask = document.getElementById("imageMask");
 var imageMaskContext = imageMask.getContext("2d");
@@ -194,7 +200,6 @@ var BMAX=255;
 var BMIN=180;
 var THRESH_MIN=120;
 
-//CHANGE THE RBG RANGE TO A HSV
 
 colorDetect.onclick = function (event) { //When the button is pressed the image tracking begins
 
@@ -247,7 +252,13 @@ ShowImage.onload = function (event) { // When image is found run the following..
   HSVcanvas.setAttribute("width", ShowImage.width);
   HSVcanvas.setAttribute("height", ShowImage.height);
   HSVcanvas.style.display = "block";
+
+  HSVcanvas2.setAttribute("width", ShowImage.width);
+  HSVcanvas2.setAttribute("height", ShowImage.height);
+  HSVcanvas2.style.display = "block";
   //
+
+  
 
   imageMask.setAttribute("width", ShowImage.width);
   imageMask.setAttribute("height", ShowImage.height);
@@ -268,7 +279,6 @@ async function DetectImage() { // Function that contains the cv model
   console.log("DETECT IMAGE");
 
   /***************opencv********************************/
-  //ANN:4
   let src = cv.imread(ShowImage);
   arows = src.rows;
   acols = src.cols;
@@ -287,8 +297,6 @@ async function DetectImage() { // Function that contains the cv model
 
   let tracker = 0;
 
-  //var TRACKoutput = document.getElementById("TRACKdemo");
-  //TRACKoutput.innerHTML = b_tracker;
   var XCMoutput = document.getElementById("XCMdemo");
   var YCMoutput = document.getElementById("YCMdemo");
 
@@ -296,10 +304,6 @@ async function DetectImage() { // Function that contains the cv model
   YCMoutput.innerHTML = 0;
 
 
-//  var CONTOURoutput = document.getElementById("CONTOURdemo");
-//  CONTOURoutput.innerHTML = b_contour;
-
-  //ANN:8
   let M00Array = [0,];
   let orig = new cv.Mat();
   let mask = new cv.Mat();
@@ -310,8 +314,9 @@ async function DetectImage() { // Function that contains the cv model
   let rgbaPlanes = new cv.MatVector();
 
   let hsv = new cv.Mat();
-
-  let color = new cv.Scalar(0,0,0);
+  let hsvPlanes = new cv.MatVector();
+  let hsvmask = new cv.Mat();
+  let hsvmask1 = new cv.Mat();
 
   clear_canvas();
 
@@ -327,29 +332,43 @@ async function DetectImage() { // Function that contains the cv model
   let RP = rgbaPlanes.get(0);
   cv.merge(rgbaPlanes,orig);
 
-  cv.cvtColor(orig, hsv, cv.COLOR_RGB2HSV);
-
   console.log("ISCONTINUOUS = " + orig.isContinuous());
 
 
+  // Modifying the code to take hsv as the source image instead of source.
+  var HMIN = 75;
+  var HMAX = 120;
+  var SMIN = 100;
+  var SMAX = 255;
+  var VMIN = 100; 
+  var VMAX = 255;
+  
+
+  cv.cvtColor(src, hsv, cv.COLOR_BGR2HSV,0); // produces the image hsv chich is src converted
+  cv.imshow('HSVcanvas', hsv); // displays the image in hsv on the html webpage
+  
 
 
+  let hsvhigh = new cv.Mat(hsv.rows,hsv.cols,hsv.type(),[HMAX,SMAX,VMAX,255]); //Setting the max values of hsv
+  let hsvlow = new cv.Mat(hsv.rows,hsv.cols,hsv.type(),[HMIN,SMIN,VMIN,0]); //Setting the min values of hsv
 
+  cv.inRange(hsv,hsvlow,hsvhigh,hsvmask1); // setting the range of hsv values that will be accepted
+  cv.threshold(hsvmask1,hsvmask,120,255,cv.THRESH_BINARY);
 
-  //ANN:7
+  
+  cv.imshow('HSVcanvas2', hsvmask);
+
   let high = new cv.Mat(src.rows,src.cols,src.type(),[RMAX,GMAX,BMAX,255]);
   let low = new cv.Mat(src.rows,src.cols,src.type(),[RMIN,GMIN,BMIN,0]);
 
   cv.inRange(src,low,high,mask1);
   //inRange(source image, lower limit, higher limit, destination image)
-
   cv.threshold(mask1,mask,THRESH_MIN,255,cv.THRESH_BINARY);
   //threshold(source image,destination image,threshold,255,threshold method);
 
 
 
 /********************start contours******************************************/
-  //ANN:10
   if(b_tracker == true){ // if tracking then find contours of object
 
     cv.findContours(mask,contours,hierarchy,cv.RETR_CCOMP,cv.CHAIN_APPROX_SIMPLE);
@@ -366,7 +385,6 @@ async function DetectImage() { // Function that contains the cv model
      }
     }
 
-    //ANN:12
     let cnt;
     let Moments;
     let M00;
@@ -374,7 +392,6 @@ async function DetectImage() { // Function that contains the cv model
 
 
 
-    //ANN:13
     for(let k = 0; k < contours.size(); k++){
         cnt = contours.get(k);
         Moments = cv.moments(cnt,false);
@@ -410,7 +427,8 @@ async function DetectImage() { // Function that contains the cv model
     /* LOOKS LIKE THIS IS THE COMMAND THAT PASSES THE VALUE TO THE C++ CODE */
 
     //fetch(document.location.origin+'/?xcm='+Math.round(x_cm)+';stop');
-    fetch(document.location.origin+'/?cm='+Math.round(x_cm)+';'+Math.round(y_cm)+';stop');
+    
+   fetch(document.location.origin+'/?cm='+Math.round(x_cm)+';'+Math.round(y_cm)+';stop');
 
     //MY CODE
 
@@ -419,8 +437,6 @@ async function DetectImage() { // Function that contains the cv model
 
 
     console.log("M00ARRAY = " + M00Array);
-
-    //ANN:14
 
     //**************min area bounding rect********************
     let rotatedRect=cv.minAreaRect(cnt);
@@ -459,31 +475,12 @@ async function DetectImage() { // Function that contains the cv model
 
 
 
-
-//    cnt.delete();
-/******************end contours  note cnt line one up*******************************************/
-
-
-  //end try
-//  catch{
-//    console.log("ERROR TRACKER NO CONTOUR");
-//    clear_canvas();
-//    drawErrorTracking_Text();
-//  }
-
-  //}//end b_tracking if statement
-//  else{
-//      XCMoutput.innerHTML = 0;
-//      YCMoutput.innerHTML = 0;
-//  }
-
   if(b_tracker==true){
      cv.imshow('imageMask', mask);
   }
   //cv.imshow('imageMask', R);
   cv.imshow('imageCanvas', src);
 
-  //ANN:8A
   src.delete();
   high.delete();
   low.delete();
@@ -493,9 +490,14 @@ async function DetectImage() { // Function that contains the cv model
   mask.delete();
   contours.delete();
   hierarchy.delete();
-  //cnt.delete();
+//  cnt.delete();
   RP.delete();
   hsv.delete();
+  hsvmask.delete();
+  hsvmask1.delete();
+  hsvPlanes.delete();
+  hsvhigh.delete();
+  hsvlow.delete();
 
 
 
@@ -506,8 +508,8 @@ async function DetectImage() { // Function that contains the cv model
 
 
  setTimeout(function(){colorDetect.click();},10);
-
-}//end detectimage
+}
+//end detectimage
 
 
 function MaxAreaArg(arr){

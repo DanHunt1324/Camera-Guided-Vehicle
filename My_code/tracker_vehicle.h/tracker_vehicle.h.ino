@@ -252,8 +252,8 @@ void setup() {
 
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_CIF);  //UXGA|SXGA|XGA|SVGA|VGA|CIF|QVGA|HQVGA|QQVGA  設定初始化影像解析度
-  s->set_vflip(s, 1);          // 0 = disable , 1 = enable VERTICAL FLIP IMAGE TO SUIT VEHICLE
+  s->set_framesize(s, FRAMESIZE_CIF);  
+
   WiFi.mode(WIFI_AP_STA);
   WiFi.begin(ssid, password);
 
@@ -269,7 +269,7 @@ void setup() {
   if (WiFi.status() == WL_CONNECTED) {
     Serial.print("ESP IP Address: http://");
     Serial.println(WiFi.localIP());
-    digitalWrite(LED_BUILTIN,HIGH); // ADD OR REMOVE TO CHANGE THE LED FLASHLIGHT ////////////////////////
+                //digitalWrite(LED_BUILTIN,HIGH); // ADD OR REMOVE TO CHANGE THE LED FLASHLIGHT
   }
   server.begin();
 }
