@@ -114,18 +114,11 @@ button{ // Generic button
             </div>
         </div>
 
+        <div class="section"><!-----ADDING IN A NEW SECTION FOR HSV MASK--->
+            <h2>HSVcancas</h2>
+            <canvas id="HSVcanvas"></canvas>
+        </div>
 
-      <!-----ANN:5---->
-
-    <!--  <div class="section">
-        <h2>Threshold Minimum-Binary Image</h2>
-        <table>
-            <tr>
-                <td>Minimum Threshold:&#160;&#160;&#160;<span id="THRESH_MINdemo"></span></td>
-                <td><input type="range" id="thresh_min" min="0" max="255" value="120" class = "slider">  </td>
-            </tr>
-        </table>
-      </div> -->
     </div>   <!------endfirstcolumn---------------->
 
     <div class = "column">
@@ -164,6 +157,10 @@ var colorDetect = document.getElementById('track');                   // Modifie
 var ShowImage = document.getElementById('ShowImage');
 var canvas = document.getElementById("canvas");
 var context = canvas.getContext("2d");
+
+var HSVcanvas = document.getElementById('HSVcanvas'); //ADDED
+var HSVcontext = canvas.getContext("2d"); //ADDED
+
 var imageMask = document.getElementById("imageMask");
 var imageMaskContext = imageMask.getContext("2d");
 var imageCanvas = document.getElementById("imageCanvas");
@@ -197,7 +194,7 @@ var BMAX=255;
 var BMIN=180;
 var THRESH_MIN=120;
 
-
+//CHANGE THE RBG RANGE TO A HSV
 
 colorDetect.onclick = function (event) { //When the button is pressed the image tracking begins
 
@@ -244,6 +241,13 @@ ShowImage.onload = function (event) { // When image is found run the following..
   imageCanvas.setAttribute("width", ShowImage.width);
   imageCanvas.setAttribute("height", ShowImage.height);
   imageCanvas.style.display = "block";
+
+
+  // ADDED BY ME
+  HSVcanvas.setAttribute("width", ShowImage.width);
+  HSVcanvas.setAttribute("height", ShowImage.height);
+  HSVcanvas.style.display = "block";
+  //
 
   imageMask.setAttribute("width", ShowImage.width);
   imageMask.setAttribute("height", ShowImage.height);
@@ -305,9 +309,14 @@ async function DetectImage() { // Function that contains the cv model
   let hierarchy = new cv.Mat();
   let rgbaPlanes = new cv.MatVector();
 
+  let hsv = new cv.Mat();
+
   let color = new cv.Scalar(0,0,0);
 
   clear_canvas();
+
+
+
 
 
 
@@ -318,7 +327,7 @@ async function DetectImage() { // Function that contains the cv model
   let RP = rgbaPlanes.get(0);
   cv.merge(rgbaPlanes,orig);
 
-
+  cv.cvtColor(orig, hsv, cv.COLOR_RGB2HSV);
 
   console.log("ISCONTINUOUS = " + orig.isContinuous());
 
@@ -486,6 +495,7 @@ async function DetectImage() { // Function that contains the cv model
   hierarchy.delete();
   //cnt.delete();
   RP.delete();
+  hsv.delete();
 
 
 
@@ -495,7 +505,7 @@ async function DetectImage() { // Function that contains the cv model
 /***************end opencv******************************/
 
 
- setTimeout(function(){colorDetect.click();},500);
+ setTimeout(function(){colorDetect.click();},10);
 
 }//end detectimage
 

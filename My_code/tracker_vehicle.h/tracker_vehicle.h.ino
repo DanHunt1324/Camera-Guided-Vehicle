@@ -269,7 +269,7 @@ void setup() {
   if (WiFi.status() == WL_CONNECTED) {
     Serial.print("ESP IP Address: http://");
     Serial.println(WiFi.localIP());
-    //digitalWrite(LED_BUILTIN,HIGH); // ADD OR REMOVE TO CHANGE THE LED FLASHLIGHT ////////////////////////
+    digitalWrite(LED_BUILTIN,HIGH); // ADD OR REMOVE TO CHANGE THE LED FLASHLIGHT ////////////////////////
   }
   server.begin();
 }
