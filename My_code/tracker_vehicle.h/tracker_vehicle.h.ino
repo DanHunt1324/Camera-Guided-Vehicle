@@ -68,7 +68,7 @@ void clockwise() {
   digitalWrite(MOTOR2PIN3,LOW);
   digitalWrite(MOTOR2PIN4,HIGH);
 
-  delay(500);
+  delay(50);
 
  
 }
@@ -80,7 +80,7 @@ void anticlockwise(){
   digitalWrite(MOTOR2PIN3,HIGH);
   digitalWrite(MOTOR2PIN4,LOW);
   
-  delay(500);
+  delay(50);
 
  
 }
@@ -92,7 +92,7 @@ void forwards(){
   digitalWrite(MOTOR2PIN3,HIGH);
   digitalWrite(MOTOR2PIN4,LOW);
 
-   delay(500);
+  delay(50);   
 
  
 }
@@ -104,7 +104,7 @@ void backwards(){
   digitalWrite(MOTOR2PIN3,LOW);
   digitalWrite(MOTOR2PIN4,HIGH);
 
-   delay(500);
+  delay(50); 
 
  
 }
@@ -136,51 +136,56 @@ void ExecuteCommand() {
   }
 
   else if (cmd == "flash") {
-        Serial.println("flash");
+        //Serial.println("flash");
         
         digitalWrite(LED_BUILTIN,(state)); // ADD OR REMOVE TO CHANGE THE LED FLASHLIGHT
         state = !state;
         Serial.println(state);
         
   }
-  else if (cmd=="cm"){ //Rotational position control
-    int XcmVal = P1.toInt();
-    Serial.println("cmd= "+cmd+" ,VALXCM= "+XcmVal);
-
-
-    if (XcmVal <= 140 && XcmVal != 0){   //If the object is in the right half of screen turn anticlockwise
-      anticlockwise();
-      Serial.println("anti-clockwise");
-    }
-    else if (XcmVal >= 260 && XcmVal != 0){
-      clockwise();
-      Serial.println("clockwise");
-    }
-    else {  // else function just to stop constant movement, will need tweaking
-      MotorDefault();
-      Serial.println("Centered");
-    }
-  }
-  else if (cmd=="M00"){ //The command M00 gives an area size for the object  being tracked. This if statement introduces the M00 value into the code.
+    else if (cmd=="M00"){ //The command M00 gives an area size for the object  being tracked. This if statement introduces the M00 value into the code.
     int M00 = P1.toInt();
     Serial.println("cmd= " + cmd + " = "+M00); // This allows visual confirmation that a value of M00 is found.
 
 
-    if (M00 >= 7000 && M00 > 1000){ // IF DISTANCE IS LESS THAN .... MOVE BACKWARDS
+    if (M00 >= 7000 && M00 > 500){ // IF DISTANCE IS LESS THAN .... MOVE BACKWARDS
       backwards();
-      Serial.println("backwards");
+      //Serial.println("backwards");
     }
 
-    else if (M00 <= 6000 && M00 > 1000){ // IF DISTANCE IS GREATER THAN .... MOVE FORWARDS
-    forwards();
-    Serial.println("forwards");
+    else if (M00 <= 6000 && M00 > 500){ // IF DISTANCE IS GREATER THAN .... MOVE FORWARDS
+      forwards();
+      //Serial.println("forwards");
     }
     else { // else function just to stop constant movement, will need tweaking
       MotorDefault();
-      Serial.println("Correct Distance");
+      //Serial.println("Correct Distance");
     }
   }
 
+
+  else if (cmd=="cm"){ //Rotational position control
+    int XcmVal = P1.toInt();
+    Serial.println("cmd= "+cmd+" ,VALXCM= "+XcmVal);
+
+    if (XcmVal > 140 &&XcmVal < 260) // IF IN THE MIDDLE
+    {
+      MotorDefault();
+    }
+    
+    else if (XcmVal <= 140 && XcmVal != 0){   //If the object is in the right half of screen turn anticlockwise
+      clockwise();
+      //Serial.println("anti-clockwise");
+    }
+    else if (XcmVal >= 260 && XcmVal != 0){
+      anticlockwise();
+      //Serial.println("clockwise");
+    }
+    else {  // else function just to stop constant movement, will need tweaking
+      MotorDefault();
+      //Serial.println("Centered");
+    }
+  }
 
 
 

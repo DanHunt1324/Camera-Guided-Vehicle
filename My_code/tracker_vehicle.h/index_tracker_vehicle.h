@@ -350,12 +350,12 @@ async function DetectImage() { // Function that contains the cv model
 
 
   // Modifying the code to take hsv as the source image instead of source.
-  var HMIN = 5;
-  var HMAX = 80;
-  var SMIN = 50;
-  var SMAX = 255;
-  var VMIN = 180; 
-  var VMAX = 255;
+  var HMIN = 10;  // DEFAULT TO 5 
+  var HMAX = 80; //NEED TO NAIL THE HUE RANGE
+  var SMIN = 120;  // LOWER FOR MORE GRAY
+  var SMAX = 255; // HIGHER FOR MORE COLOUR SO IS SET TO MAX 
+  var VMIN = 30; // VALUE IS DARKNESS 
+  var VMAX = 255; // SET TO MAX TO AVOID MISSING IMAGE
   
 
   cv.cvtColor(src, hsv, cv.COLOR_BGR2HSV,0); // produces the image hsv chich is src converted
