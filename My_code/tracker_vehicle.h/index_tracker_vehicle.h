@@ -80,6 +80,16 @@ th{
     font-size: 24px;
     border-radius: 4px;
 }
+#flash{ // Button to turn on and off flash
+    border: none;
+    color: #FEFCFB;
+    background-color: #7B0828;
+    padding: 15px;
+    text-align: center;
+    display: inline-block;
+    font-size: 24px;
+    border-radius: 4px;
+}
 button{ // Generic button
     border: none;
     color: #FEFCFB;
@@ -100,6 +110,7 @@ button{ // Generic button
             <tr>
                 <td><center><input type="button" id="track" value="Object Tracking"></center></td>
                 <td><center><input type="button" id="restart" value="Reset Board"></center></td>
+                <td><center><input type="button" id="flash" value="Flashlight"></center></td>
             </tr>
         </table>
     </div>
@@ -274,6 +285,9 @@ restart.onclick = function (event) {
   fetch(location.origin+'/?restart=stop');
 }
 
+flash.onclick = function (event) {
+    fetch(location.origin+'/?flash=stop')
+}
 
 async function DetectImage() { // Function that contains the cv model
   console.log("DETECT IMAGE");
@@ -336,11 +350,11 @@ async function DetectImage() { // Function that contains the cv model
 
 
   // Modifying the code to take hsv as the source image instead of source.
-  var HMIN = 75;
-  var HMAX = 120;
-  var SMIN = 100;
+  var HMIN = 5;
+  var HMAX = 80;
+  var SMIN = 50;
   var SMAX = 255;
-  var VMIN = 100; 
+  var VMIN = 180; 
   var VMAX = 255;
   
 
@@ -371,7 +385,7 @@ async function DetectImage() { // Function that contains the cv model
 /********************start contours******************************************/
   if(b_tracker == true){ // if tracking then find contours of object
 
-    cv.findContours(mask,contours,hierarchy,cv.RETR_CCOMP,cv.CHAIN_APPROX_SIMPLE);
+    cv.findContours(hsvmask,contours,hierarchy,cv.RETR_CCOMP,cv.CHAIN_APPROX_SIMPLE);
     //findContours(source image, array of contours found, hierarchy of contours
         // if contours are inside other contours, method of contour data retrieval,
         //algorithm method)
@@ -428,11 +442,11 @@ async function DetectImage() { // Function that contains the cv model
 
     //fetch(document.location.origin+'/?xcm='+Math.round(x_cm)+';stop');
     
-   fetch(document.location.origin+'/?cm='+Math.round(x_cm)+';'+Math.round(y_cm)+';stop');
+    fetch(document.location.origin+'/?cm='+Math.round(x_cm)+';'+Math.round(y_cm)+';stop');
 
     //MY CODE
 
-    fetch(document.location.origin+'/?M00='+M00+';'); //Gives the value of M00 through the console to tracker_vehicle.h
+    fetch(document.location.origin+'/?M00='+M00+';stop'); //Gives the value of M00 through the console to tracker_vehicle.h
 
 
 
@@ -507,7 +521,7 @@ async function DetectImage() { // Function that contains the cv model
 /***************end opencv******************************/
 
 
- setTimeout(function(){colorDetect.click();},10);
+ setTimeout(function(){colorDetect.click();},20);
 }
 //end detectimage
 

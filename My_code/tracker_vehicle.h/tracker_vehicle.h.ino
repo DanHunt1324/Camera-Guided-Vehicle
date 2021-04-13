@@ -50,6 +50,7 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 #define MOTOR2PIN3        13
 #define MOTOR2PIN4        14
 
+int state = false;
 
 
 void MotorDefault() { // STOPS THE MOTOR MOVING
@@ -66,6 +67,10 @@ void clockwise() {
 
   digitalWrite(MOTOR2PIN3,LOW);
   digitalWrite(MOTOR2PIN4,HIGH);
+
+  delay(500);
+
+ 
 }
 
 void anticlockwise(){
@@ -74,14 +79,22 @@ void anticlockwise(){
 
   digitalWrite(MOTOR2PIN3,HIGH);
   digitalWrite(MOTOR2PIN4,LOW);
+  
+  delay(500);
+
+ 
 }
-// NEWLY IMPLEMENTED, NOT YET TESTED 08.04.2021
+
 void forwards(){
   digitalWrite(MOTOR1PIN1, HIGH);
   digitalWrite(MOTOR1PIN2, LOW);
 
   digitalWrite(MOTOR2PIN3,HIGH);
   digitalWrite(MOTOR2PIN4,LOW);
+
+   delay(500);
+
+ 
 }
 
 void backwards(){
@@ -90,6 +103,10 @@ void backwards(){
 
   digitalWrite(MOTOR2PIN3,LOW);
   digitalWrite(MOTOR2PIN4,HIGH);
+
+   delay(500);
+
+ 
 }
 
 WiFiServer server(80);
@@ -117,23 +134,25 @@ void ExecuteCommand() {
   else if (cmd=="restart") {
     ESP.restart();
   }
-  else if (cmd=="cm"){
+
+  else if (cmd == "flash") {
+        Serial.println("flash");
+        
+        digitalWrite(LED_BUILTIN,(state)); // ADD OR REMOVE TO CHANGE THE LED FLASHLIGHT
+        state = !state;
+        Serial.println(state);
+        
+  }
+  else if (cmd=="cm"){ //Rotational position control
     int XcmVal = P1.toInt();
     Serial.println("cmd= "+cmd+" ,VALXCM= "+XcmVal);
 
 
-
-
-
-
-
-    /*THIS IS THE CODE I HAVE ADDED MYSELF*/
-
-    if (XcmVal >= 140 && XcmVal != 0){   //If the object is in the right half of screen turn anticlockwise
+    if (XcmVal <= 140 && XcmVal != 0){   //If the object is in the right half of screen turn anticlockwise
       anticlockwise();
       Serial.println("anti-clockwise");
     }
-    else if (XcmVal <= 300 && XcmVal != 0){
+    else if (XcmVal >= 260 && XcmVal != 0){
       clockwise();
       Serial.println("clockwise");
     }
@@ -144,15 +163,15 @@ void ExecuteCommand() {
   }
   else if (cmd=="M00"){ //The command M00 gives an area size for the object  being tracked. This if statement introduces the M00 value into the code.
     int M00 = P1.toInt();
-    Serial.println("cmd= " + cmd + "M00="+M00); // This allows visual confirmation that a value of M00 is found.
+    Serial.println("cmd= " + cmd + " = "+M00); // This allows visual confirmation that a value of M00 is found.
 
 
-    if (M00 >= 12000 && M00 != 0){ // IF DISTANCE IS LESS THAN .... MOVE BACKWARDS
+    if (M00 >= 7000 && M00 > 1000){ // IF DISTANCE IS LESS THAN .... MOVE BACKWARDS
       backwards();
       Serial.println("backwards");
     }
 
-    else if (M00 <= 6000 && M00 != 0){ // IF DISTANCE IS GREATER THAN .... MOVE FORWARDS
+    else if (M00 <= 6000 && M00 > 1000){ // IF DISTANCE IS GREATER THAN .... MOVE FORWARDS
     forwards();
     Serial.println("forwards");
     }
@@ -161,8 +180,6 @@ void ExecuteCommand() {
       Serial.println("Correct Distance");
     }
   }
-
-
 
 
 
@@ -252,7 +269,8 @@ void setup() {
 
   //drop down frame size for higher initial frame rate
   sensor_t * s = esp_camera_sensor_get();
-  s->set_framesize(s, FRAMESIZE_CIF);  
+  s->set_framesize(s, FRAMESIZE_CIF);
+  s->set_vflip(s, 1);          // 0 = disable , 1 = enable
 
   WiFi.mode(WIFI_AP_STA);
   WiFi.begin(ssid, password);
@@ -269,7 +287,7 @@ void setup() {
   if (WiFi.status() == WL_CONNECTED) {
     Serial.print("ESP IP Address: http://");
     Serial.println(WiFi.localIP());
-                //digitalWrite(LED_BUILTIN,HIGH); // ADD OR REMOVE TO CHANGE THE LED FLASHLIGHT
+    digitalWrite(LED_BUILTIN,LOW); // ADD OR REMOVE TO CHANGE THE LED FLASHLIGHT
   }
   server.begin();
 }
