@@ -1,13 +1,4 @@
-/*********
-  The include file, index_OCV_ColorTrack.h, the Client, is an intoduction of OpenCV.js to the ESP32 Camera environment. The Client was
-  developed and written by Andrew R. Sass. Permission to reproduce the index_OCV_ColorTrack.h file is granted free of charge if this
-  entire copyright notice is included in all copies of the index_OCV_ColorTrack.h file.
-
-  Complete instructions at https://RandomNerdTutorials.com/esp32-cam-opencv-js-color-detection-tracking/
-
-  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
-  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*********/
+/* Code produced by Daniel Hunt (3700510) for the purpose of final year project between the dates of Sept 2020 - May 2021 */
 
 #include <WiFi.h>
 #include <WiFiClientSecure.h>
@@ -24,7 +15,7 @@ const char* password = "tXeeLNaHnd2kNybJ";
 String Feedback="";
 String Command="",cmd="",P1="",P2="",P3="",P4="",P5="",P6="",P7="",P8="",P9="";
 byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolonstate=0;
-//ANN:0
+
 //       AI-Thinker
 #define PWDN_GPIO_NUM     32
 #define RESET_GPIO_NUM    -1
@@ -45,76 +36,62 @@ byte ReceiveState=0,cmdState=1,strState=1,questionstate=0,equalstate=0,semicolon
 
 /* Defining the pins that control the DC motors */
 #define LED_BUILTIN       4
-#define MOTOR1PIN1        15
-#define MOTOR1PIN2        12
-#define MOTOR2PIN3        13
-#define MOTOR2PIN4        14
+#define MOTOR1PIN1        12 //PURPLE PIN1
+#define MOTOR1PIN2        13 //BLUE PIN2
+#define MOTOR2PIN3        14 //YELLOW PIN3
+#define MOTOR2PIN4        15 //GREEN PIN4
 
 int state = false;
-
+int M00 = 0;
 
 void MotorDefault() { // STOPS THE MOTOR MOVING
   digitalWrite(MOTOR1PIN1, LOW);
   digitalWrite(MOTOR1PIN2, LOW);
-
   digitalWrite(MOTOR2PIN3,LOW);
   digitalWrite(MOTOR2PIN4,LOW);
 }
-/* Creates funtion for both directions of travel */
-void clockwise() {
+/* Creates funtion for directions of travel */
+void anticlockwise(){
   digitalWrite(MOTOR1PIN1, HIGH);
   digitalWrite(MOTOR1PIN2, LOW);
-
-  digitalWrite(MOTOR2PIN3,LOW);
-  digitalWrite(MOTOR2PIN4,HIGH);
-
-  delay(50);
-
- 
-}
-
-void anticlockwise(){
-  digitalWrite(MOTOR1PIN1, LOW);
-  digitalWrite(MOTOR1PIN2, HIGH);
-
   digitalWrite(MOTOR2PIN3,HIGH);
   digitalWrite(MOTOR2PIN4,LOW);
-  
-  delay(50);
 
- 
+  delay(30);
+}
+
+void clockwise(){
+  digitalWrite(MOTOR1PIN1, LOW);
+  digitalWrite(MOTOR1PIN2, HIGH);
+  digitalWrite(MOTOR2PIN3,LOW);
+  digitalWrite(MOTOR2PIN4,HIGH);
+  
+  delay(30);
 }
 
 void forwards(){
-  digitalWrite(MOTOR1PIN1, HIGH);
-  digitalWrite(MOTOR1PIN2, LOW);
-
-  digitalWrite(MOTOR2PIN3,HIGH);
-  digitalWrite(MOTOR2PIN4,LOW);
-
-  delay(50);   
-
- 
-}
-
-void backwards(){
-  digitalWrite(MOTOR1PIN1, LOW);
-  digitalWrite(MOTOR1PIN2, HIGH);
-
+  digitalWrite(MOTOR1PIN1,HIGH);
+  digitalWrite(MOTOR1PIN2,LOW);
   digitalWrite(MOTOR2PIN3,LOW);
   digitalWrite(MOTOR2PIN4,HIGH);
 
-  delay(50); 
+  delay(30);   
+}
 
- 
+void backwards(){ 
+  digitalWrite(MOTOR1PIN1, LOW);
+  digitalWrite(MOTOR1PIN2, HIGH);
+  digitalWrite(MOTOR2PIN3,HIGH);
+  digitalWrite(MOTOR2PIN4,LOW);
+
+  delay(30); 
 }
 
 WiFiServer server(80);
-//ANN:2
+
 void ExecuteCommand() {
-  if (cmd!="colorDetect") {  //Omit printout
-    //Serial.println("cmd= "+cmd+" ,P1= "+P1+" ,P2= "+P2+" ,P3= "+P3+" ,P4= "+P4+" ,P5= "+P5+" ,P6= "+P6+" ,P7= "+P7+" ,P8= "+P8+" ,P9= "+P9);
-    //Serial.println("");
+  if (cmd!="colorDetect") {
+
   }
 
   if (cmd=="resetwifi") {
@@ -131,36 +108,27 @@ void ExecuteCommand() {
     Serial.println("STAIP: "+WiFi.localIP().toString());
     Feedback="STAIP: "+WiFi.localIP().toString();
   }
+
   else if (cmd=="restart") {
     ESP.restart();
   }
 
-  else if (cmd == "flash") {
-        //Serial.println("flash");
-        
-        digitalWrite(LED_BUILTIN,(state)); // ADD OR REMOVE TO CHANGE THE LED FLASHLIGHT
+  else if (cmd == "flash") {       
+        digitalWrite(LED_BUILTIN,(state));
         state = !state;
         Serial.println(state);
-        
   }
-    else if (cmd=="M00"){ //The command M00 gives an area size for the object  being tracked. This if statement introduces the M00 value into the code.
+
+
+  else if (cmd=="M00"){ //The command M00 gives an area size for the object  being tracked. This if statement introduces the M00 value into the code.
     int M00 = P1.toInt();
-    Serial.println("cmd= " + cmd + " = "+M00); // This allows visual confirmation that a value of M00 is found.
+    Serial.println("cmd= " + cmd + " = " + M00); // This allows visual confirmation that a value of M00 is found.
 
-
-    if (M00 >= 7000 && M00 > 500){ // IF DISTANCE IS LESS THAN .... MOVE BACKWARDS
-      backwards();
-      //Serial.println("backwards");
-    }
-
-    else if (M00 <= 6000 && M00 > 500){ // IF DISTANCE IS GREATER THAN .... MOVE FORWARDS
-      forwards();
-      //Serial.println("forwards");
-    }
-    else { // else function just to stop constant movement, will need tweaking
-      MotorDefault();
-      //Serial.println("Correct Distance");
-    }
+    if (M00 >= 8000 && M00 > 1000){ // IF DISTANCE IS LESS THAN .... MOVE BACKWARDS
+      backwards();}
+    else if (M00 <= 5000 && M00 > 1000){ // IF DISTANCE IS GREATER THAN .... MOVE FORWARDS
+      forwards();}
+    else { MotorDefault(); }
   }
 
 
@@ -168,49 +136,16 @@ void ExecuteCommand() {
     int XcmVal = P1.toInt();
     Serial.println("cmd= "+cmd+" ,VALXCM= "+XcmVal);
 
-    if (XcmVal > 140 &&XcmVal < 260) // IF IN THE MIDDLE
-    {
-      MotorDefault();
-    }
-    
-    else if (XcmVal <= 140 && XcmVal != 0){   //If the object is in the right half of screen turn anticlockwise
-      clockwise();
-      //Serial.println("anti-clockwise");
-    }
-    else if (XcmVal >= 260 && XcmVal != 0){
-      anticlockwise();
-      //Serial.println("clockwise");
-    }
+    if (XcmVal > 140 &&XcmVal < 260 && M00 > 1000) {// IF IN THE MIDDLE
+      MotorDefault();}
+    else if (XcmVal <= 140 && XcmVal != 0 && M00 > 1000) {   //If the object is in the right half of screen turn anticlockwise
+      clockwise();}
+    else if (XcmVal >= 260 && XcmVal != 0 && M00 > 1000) {
+      anticlockwise();}
     else {  // else function just to stop constant movement, will need tweaking
-      MotorDefault();
-      //Serial.println("Centered");
-    }
+      MotorDefault();}
   }
 
-
-
-
-/* Once the size of the object can be determined in pixels it needs to be converted back into value of distance away from vehicle*/
-/* Alternatively the distance the vehicle sits can be made a constant which is a much greater idea. */
-/* Using a value of M00 I can divide the actual value by the expected value of M00 and then multiply by the known distance from target  */
-
-
-// THESE FUNCTIONS BELOW CAN PROBABLY BE REMOVED AS I AM NOT MODIFYING THEM
-  else if (cmd=="quality") {
-    sensor_t * s = esp_camera_sensor_get();
-    int val = P1.toInt();
-    s->set_quality(s, val);
-  }
-  else if (cmd=="contrast") {
-    sensor_t * s = esp_camera_sensor_get();
-    int val = P1.toInt();
-    s->set_contrast(s, val);
-  }
-  else if (cmd=="brightness") {
-    sensor_t * s = esp_camera_sensor_get();
-    int val = P1.toInt();
-    s->set_brightness(s, val);
-  }
   else {
     Feedback="Command is not defined.";
   }
@@ -292,12 +227,9 @@ void setup() {
   if (WiFi.status() == WL_CONNECTED) {
     Serial.print("ESP IP Address: http://");
     Serial.println(WiFi.localIP());
-    digitalWrite(LED_BUILTIN,LOW); // ADD OR REMOVE TO CHANGE THE LED FLASHLIGHT
   }
   server.begin();
 }
-
-
 
 void loop() { // Predefined code that pulls the console printout from the html webpage
   Feedback="";Command="";cmd="";P1="";P2="";P3="";P4="";P5="";P6="";P7="";P8="";P9="";
@@ -325,7 +257,7 @@ void loop() { // Predefined code that pulls the console printout from the html w
                 delay(1000);
                 ESP.restart();
               }
-              //ANN:1
+              
               client.println("HTTP/1.1 200 OK");
               client.println("Access-Control-Allow-Origin: *");
               client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
@@ -351,7 +283,7 @@ void loop() { // Predefined code that pulls the console printout from the html w
               esp_camera_fb_return(fb);
             }
             else {
-              //ANN:1
+              
               client.println("HTTP/1.1 200 OK");
               client.println("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept");
               client.println("Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS");
@@ -397,7 +329,7 @@ void loop() { // Predefined code that pulls the console printout from the html w
     client.stop();
   }
 }
-//MAY NEED TO INVESTIGATE THIS FURTHER TO PULL DATA FROM THE HTML PAGE
+
 void getCommand(char c){
   if (c=='?') ReceiveState=1;
   if ((c==' ')||(c=='\r')||(c=='\n')) ReceiveState=0;

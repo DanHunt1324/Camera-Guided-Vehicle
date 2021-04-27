@@ -1,9 +1,6 @@
 /****************************
-  This include file, index_OCV_ColorTrack.h, the Client, is an intoduction of OpenCV.js to the ESP32 Camera environment. The Client was
-  developed and written by Andrew R. Sass. Permission to reproduce the index_OCV_ColorTrack.h file is granted free of charge if this
-  entire copyright notice is included in all copies of the index_OCV_ColorTrack.h file.
-
-  Complete instructions at https://RandomNerdTutorials.com/esp32-cam-opencv-js-color-detection-tracking/
+  Code produced by Daniel Hunt (3700510) for the purpose of final year project between the dates of Sept 2020 - May 2021
+  This file index_tracker_vehicle.h, allows OpenCV.js to function for the ESP32 Camera environment.
 *******************************/
 static const char PROGMEM INDEX_HTML[] = R"rawliteral(
 <!DOCTYPE html>
@@ -350,12 +347,12 @@ async function DetectImage() { // Function that contains the cv model
 
 
   // Modifying the code to take hsv as the source image instead of source.
-  var HMIN = 10;  // DEFAULT TO 5 
+  var HMIN = 5;  // DEFAULT TO 5 
   var HMAX = 80; //NEED TO NAIL THE HUE RANGE
-  var SMIN = 120;  // LOWER FOR MORE GRAY
+  var SMIN = 110;  // LOWER FOR MORE GRAY
   var SMAX = 255; // HIGHER FOR MORE COLOUR SO IS SET TO MAX 
   var VMIN = 30; // VALUE IS DARKNESS 
-  var VMAX = 255; // SET TO MAX TO AVOID MISSING IMAGE
+  var VMAX = 200; // SET TO MAX TO AVOID MISSING IMAGE
   
 
   cv.cvtColor(src, hsv, cv.COLOR_BGR2HSV,0); // produces the image hsv chich is src converted
